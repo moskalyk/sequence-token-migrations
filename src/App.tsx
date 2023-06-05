@@ -321,17 +321,13 @@ function HorizontalLinearStepper(props: any) {
 function App() {
   const {theme, setTheme} = useTheme()
 
+  setTheme('dark')
+
   const [destinationAddress, setDestinationAddress] = useState("")
   const [originAddress, setOriginAddress] = useState("")
 
   return (
     <div className="App">
-      <Box gap='6'>
-        <IconButton style={{position: 'fixed', top: '20px', right: '20px'}} icon={SunIcon} onClick={() => {
-          setTheme(theme == 'dark' ? 'light' : 'dark')
-          // setThemeLoading(true)
-        }}/>
-      </Box>
       <br/>
       <br/>
       <br/>
