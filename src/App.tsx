@@ -72,15 +72,15 @@ function Transfer(props: any) {
     <>
         <br/>
         <Box1 gap='6' justifyContent={'center'}>
-          <Card justifyContent={'center'} width="1/3" style={{minWidth: '200px'}}>
+          <Card justifyContent={'center'} width="1/3" style={{minWidth: '150px'}}>
             <br/>
-          <p className='info'><Tag label='origin'/> : {props.originAddress.slice(0,20)}...</p>
+          <p className='info'><Tag label='origin'/> : {props.originAddress.slice(0,10)}...</p>
             <br/>
           </Card>
           <p className='info' style={{marginTop: '17px'}}>→</p>
-          <Card justifyContent={'center'} width="1/3"  style={{minWidth: '200px'}}>
+          <Card justifyContent={'center'} width="1/3"  style={{minWidth: '150px'}}>
             <br/>
-            <p className='info'><Tag label='destination'/> : {props.destinationAddress.slice(0,20)}...</p>
+            <p className='info'><Tag label='destination'/> : {props.destinationAddress.slice(0,10)}...</p>
             <br/>
           </Card>
         </Box1>
