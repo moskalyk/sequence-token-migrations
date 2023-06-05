@@ -6,6 +6,9 @@ import { SequenceIndexerClient } from '@0xsequence/indexer'
 import { ethers } from 'ethers'
 import { sequence } from '0xsequence'
 
+import settings from './imgs/settings.png'
+import sign_out from './imgs/sign_out.png'
+
 import {Card, Tag, CheckmarkIcon, Box as Box1, IconButton, useTheme, SunIcon, ChevronRightIcon, ChevronLeftIcon, 
   Spinner, Placeholder, Button as Button1} from '@0xsequence/design-system'
 
@@ -117,15 +120,18 @@ function Transfer(props: any) {
 
 function OriginLogin(props: any) {
 
+  const [isLoggedOut, setIsLoggedOut] = useState(false)
+
   sequence.initWallet('mumbai')
 
   const connect = async () => {
+
     const wallet = sequence.getWallet()
 
     const connectWallet = await wallet.connect({
       app: 'Sequence Migrations from Origin Wallet',
       networkId: 80001,
-      authorize: true,
+      refresh: true,
       settings: {
         theme: 'dark'
       },
@@ -137,15 +143,31 @@ function OriginLogin(props: any) {
       props.handleNext()
     }
   }
-
+  const logout = async () => {
+    (await sequence.getWallet()).openWallet()
+    setInterval(async () => {
+      try{
+        console.log(await (await sequence.getWallet()).getAddress())
+      }catch(e){
+        setIsLoggedOut(true)
+      }
+    }, 1000)
+  }
   return(
     <>
       <br/>
       <br/>
-      <p className='info'>Sign in with the wallet for where you want your tokens to originate</p>
+      <p className='info'>Logout when the wallet opens and Sign in with the wallet for where you want your tokens to originate</p>
+      <br/>
+      {! isLoggedOut ? <img src={settings} width={'200px'} /> : null}
+      &nbsp;
+      &nbsp;
+      &nbsp;
+      {! isLoggedOut ? <img src={sign_out} width={'200px'} /> : null}
       <br/>
       <br/>
-      <button className="connect-button" onClick={connect}>connect origin</button>
+      <br/>
+      {isLoggedOut ?  <button className="connect-button" onClick={connect}>connect origin</button> : <button className="connect-button" onClick={logout}>logout</button>}
     </>
   )
 }
