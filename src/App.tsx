@@ -72,13 +72,13 @@ function Transfer(props: any) {
     <>
         <br/>
         <Box1 gap='6' justifyContent={'center'}>
-          <Card justifyContent={'center'} width="1/3">
+          <Card justifyContent={'center'} width="1/3" style={{minWidth: '200px'}}>
             <br/>
           <p className='info'><Tag label='origin'/> : {props.originAddress.slice(0,20)}...</p>
             <br/>
           </Card>
           <p className='info' style={{marginTop: '17px'}}>→</p>
-          <Card justifyContent={'center'} width="1/3">
+          <Card justifyContent={'center'} width="1/3"  style={{minWidth: '200px'}}>
             <br/>
             <p className='info'><Tag label='destination'/> : {props.destinationAddress.slice(0,20)}...</p>
             <br/>
@@ -157,7 +157,7 @@ function OriginLogin(props: any) {
     <>
       <br/>
       <br/>
-      <p className='info'>Logout when the wallet opens and Sign in with the wallet for where you want your tokens to originate</p>
+      {! isLoggedOut ?  <p className='info'>Logout when the wallet opens, before signing in again</p> : <p> Sign in with the wallet for where you want your tokens to originate</p>}
       <br/>
       {! isLoggedOut ? <img src={settings} width={'200px'} /> : null}
       &nbsp;
