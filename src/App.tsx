@@ -322,7 +322,9 @@ function App() {
       <br/>
       <br/>
       <div>
-      <HorizontalLinearStepper setDestinationAddress={setDestinationAddress} setOriginAddress={setOriginAddress} destinationAddress={destinationAddress} originAddress={originAddress}/>
+      <Box1 style={{margin: 'auto'}} width='1/2'>
+        <HorizontalLinearStepper setDestinationAddress={setDestinationAddress} setOriginAddress={setOriginAddress} destinationAddress={destinationAddress} originAddress={originAddress}/>
+      </Box1>
     </div>
     </div>
   );

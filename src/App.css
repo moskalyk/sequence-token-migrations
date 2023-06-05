@@ -75,6 +75,10 @@
   color: white;
 }
 
+.MuiStepLabel-label{
+  color: white !important;
+}
+
 .css-117w1su-MuiStepIcon-text{
   fill: white !important;
 }
