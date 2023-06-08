@@ -9,9 +9,7 @@ import { sequence } from '0xsequence'
 import settings from './imgs/settings.png'
 import sign_out from './imgs/sign_out.png'
 
-import {Card, Tag, CheckmarkIcon, Box as Box1, IconButton, useTheme, SunIcon, ChevronRightIcon, ChevronLeftIcon, 
-  Spinner, Placeholder, Button as Button1} from '@0xsequence/design-system'
-
+import {Card, Tag, Box as Box1, IconButton, useTheme, SunIcon, Button as Button1} from '@0xsequence/design-system'
 
 import Box from '@mui/material/Box';
 import Stepper from '@mui/material/Stepper';
@@ -19,14 +17,6 @@ import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
 
 const steps = ['Login with New Destination Wallet', 'Login with Origin Wallet', 'Transfer'];
 
@@ -37,8 +27,93 @@ function Transfer(props: any) {
   const [erc20Count, setErc20Count] = useState(0)
   const [erc721Count, setErc721Count] = useState(0)
   const [erc1155Count, setErc1155Count] = useState(0)
+  const [balances, setBalances] = useState<any>(null)
+
   const transfer = async () => {
-    console.log('transfer')
+    let tokenId;
+    const wallet = await sequence.getWallet()
+    const recipientAddress = props.destinationAddress
+    const originAddress = await wallet.getAddress()
+    const transactions: any = []
+
+    balances.balances.map((token: any) => {
+      if(token.contractType == 'ERC20'){
+
+        const erc20Interface = new ethers.utils.Interface([
+          'function transfer(address _to, uint256 _value)'
+        ])
+
+        const data = erc20Interface.encodeFunctionData(
+          'transfer', [recipientAddress, token.balance]
+        )
+        
+        const transaction = {
+          to: token.contractAddress,
+          data
+        }
+
+        transactions.push(transaction)
+      }
+
+      if(token.contractType == 'ERC721'){
+
+        const erc721Interface = new ethers.utils.Interface([
+          'function safeTransferFrom(address _from, address _to, uint256 _tokenId)'
+        ])
+        
+        for(let i = 0; i < Number(token.balance); i++){
+          // Encode the transfer of the NFT tokenId to recipient
+          const data = erc721Interface.encodeFunctionData(
+            'safeTransferFrom', [originAddress, recipientAddress, token.tokenID]
+          )
+          
+          const transaction = {
+            to: token.contractAddress,
+            data
+          }
+
+          transactions.push(transaction)
+        }
+      }
+
+      if(token.contractType == 'ERC1155'){
+        const erc1155Interface = new ethers.utils.Interface([
+          'function safeTransferFrom(address _from, address _to, uint256 _tokenId)'
+        ])
+        
+        for(let i = 0; i < Number(token.balance); i++){
+          // Encode the transfer of the NFT tokenId to recipient
+          const data = erc1155Interface.encodeFunctionData(
+            'safeTransferFrom', [originAddress, recipientAddress, token.tokenID]
+          )
+          
+          const transaction = {
+            to: token.contractAddress,
+            data
+          }
+
+          transactions.push(transaction)
+        }
+      }
+    })
+
+    console.log(transactions)
+    const signer = wallet.getSigner()
+
+    try{
+        if(transactions.length > 20) alert('please note: you will see multiple transactions because you are sending more than 20 tokens')
+        const batchSize = 20;
+        const totalTokens = transactions.length;
+        
+        for (let i = 0; i < totalTokens; i += batchSize) {
+          const batch = transactions.slice(i, i + batchSize);
+          
+          const txnResponse = await signer.sendTransactionBatch(batch)
+          console.log(txnResponse)
+        }
+    }catch(err){
+      alert('please transfer tokens again')
+    }
   }
 
   const getBalances = async () => {
@@ -53,8 +128,8 @@ function Transfer(props: any) {
         accountAddress: accountAddress,
         includeMetadata: true
     })
-    console.log('tokens in your account:', tokenBalances)
 
+    setBalances(tokenBalances)
     const countERC20 = tokenBalances.balances.filter(item => item.contractType === 'ERC20').length
     const countERC721 = tokenBalances.balances.filter(item => item.contractType === 'ERC721').length
     const countERC1155 = tokenBalances.balances.filter(item => item.contractType === 'ERC1155').length
@@ -64,9 +139,8 @@ function Transfer(props: any) {
   }
 
   React.useEffect(() => {
-    console.log('calling indexer')
     getBalances()
-  })
+  }, [])
 
   return(
     <>
@@ -122,7 +196,9 @@ function OriginLogin(props: any) {
 
   const [isLoggedOut, setIsLoggedOut] = useState(false)
 
-  sequence.initWallet('mumbai')
+  sequence.initWallet('mumbai', {
+    // walletAppURL: "https://next.sequence.app/"
+  })
 
   const connect = async () => {
 
@@ -174,7 +250,9 @@ function OriginLogin(props: any) {
 
 function DestinationLogin(props: any) {
 
-  sequence.initWallet('mumbai')
+  sequence.initWallet('mumbai', {
+    // walletAppURL: "https://next.sequence.app/"
+  })
 
   const connect = async () => {
     const wallet = sequence.getWallet()
@@ -316,7 +394,6 @@ function HorizontalLinearStepper(props: any) {
     </Box>
   );
 }
-
 
 function App() {
   const {theme, setTheme} = useTheme()
