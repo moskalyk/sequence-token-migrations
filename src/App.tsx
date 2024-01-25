@@ -25,6 +25,8 @@ const steps = ['Login with New Destination Wallet', 'Login with Origin Wallet', 
 
 let count = 0
 
+let accessKey = 'AQAAAAAAAAcSKkCNRpspu50Z6qDV_O0ZR8o'
+
 function Transfer(props: any) {
   const [tokenNumber, setTokenNumber] = useState(0)
   const [erc20Count, setErc20Count] = useState(0)
@@ -111,7 +113,7 @@ function Transfer(props: any) {
         for (let i = 0; i < totalTokens; i += batchSize) {
           const batch = transactions.slice(i, i + batchSize);
           
-          const txnResponse = await signer.sendTransactionBatch(batch)
+          const txnResponse = await signer.sendTransaction(batch)
           console.log(txnResponse)
         }
     }catch(err){
@@ -199,8 +201,8 @@ function OriginLogin(props: any) {
 
   const [isLoggedOut, setIsLoggedOut] = useState(false)
 
-  sequence.initWallet('polygon', {
-    // walletAppURL: "https://next.sequence.app/"
+  sequence.initWallet(accessKey, {
+    defaultNetwork: 'polygon'
   })
 
   const connect = async () => {
@@ -209,7 +211,6 @@ function OriginLogin(props: any) {
 
     const connectWallet = await wallet.connect({
       app: 'Sequence Migrations from Origin Wallet',
-      networkId: 137,
       refresh: true,
       settings: {
         theme: 'dark'
@@ -253,8 +254,8 @@ function OriginLogin(props: any) {
 
 function DestinationLogin(props: any) {
 
-  sequence.initWallet('polygon', {
-    // walletAppURL: "https://next.sequence.app/"
+  sequence.initWallet(accessKey, {
+    defaultNetwork: 'polygon'
   })
 
   const connect = async () => {
@@ -262,7 +263,6 @@ function DestinationLogin(props: any) {
 
     const connectWallet = await wallet.connect({
       app: 'Sequence Migrations from Destination Wallet',
-      networkId: 137,
       authorize: true,
       settings: {
         theme: 'dark'
