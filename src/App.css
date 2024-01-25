@@ -116,3 +116,9 @@ th {
   background-color: #333333;
   color: white;
 }
+
+.container {
+  display: flex;        /* Establishes a flex container */
+    justify-content: center; /* Horizontally centers the flex items */
+    align-items: center;     
+}

@@ -8,9 +8,12 @@ import { sequence } from '0xsequence'
 
 import settings from './imgs/settings.png'
 import sign_out from './imgs/sign_out.png'
+import { TextInput } from '@0xsequence/design-system'
 
 import {Card, Tag, Box as Box1, IconButton, useTheme, SunIcon, Button as Button1} from '@0xsequence/design-system'
 
+//@ts-ignore
+import debounce from 'lodash.debounce'
 import Box from '@mui/material/Box';
 import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
@@ -61,7 +64,7 @@ function Transfer(props: any) {
           'function safeTransferFrom(address _from, address _to, uint256 _tokenId)'
         ])
         
-        for(let i = 0; i < Number(token.balance); i++){
+        for(let i = 0; i < 1; i++){
           // Encode the transfer of the NFT tokenId to recipient
           const data = erc721Interface.encodeFunctionData(
             'safeTransferFrom', [originAddress, recipientAddress, token.tokenID]
@@ -118,7 +121,7 @@ function Transfer(props: any) {
 
   const getBalances = async () => {
 
-    const indexer = new SequenceIndexerClient('https://mumbai-indexer.sequence.app')
+    const indexer = new SequenceIndexerClient('https://polygon-indexer.sequence.app')
 
     // try any account address you'd like :)
     const accountAddress = props.originAddress
@@ -196,7 +199,7 @@ function OriginLogin(props: any) {
 
   const [isLoggedOut, setIsLoggedOut] = useState(false)
 
-  sequence.initWallet('mumbai', {
+  sequence.initWallet('polygon', {
     // walletAppURL: "https://next.sequence.app/"
   })
 
@@ -206,7 +209,7 @@ function OriginLogin(props: any) {
 
     const connectWallet = await wallet.connect({
       app: 'Sequence Migrations from Origin Wallet',
-      networkId: 80001,
+      networkId: 137,
       refresh: true,
       settings: {
         theme: 'dark'
@@ -219,38 +222,38 @@ function OriginLogin(props: any) {
       props.handleNext()
     }
   }
-  const logout = async () => {
-    (await sequence.getWallet()).openWallet()
-    setInterval(async () => {
-      try{
-        console.log(await (await sequence.getWallet()).getAddress())
-      }catch(e){
-        setIsLoggedOut(true)
-      }
-    }, 1000)
-  }
+  // const logout = async () => {
+  //   (await sequence.getWallet()).openWallet()
+  //   setInterval(async () => {
+  //     try{
+  //       console.log(await (await sequence.getWallet()).getAddress())
+  //     }catch(e){
+  //       setIsLoggedOut(true)
+  //     }
+  //   }, 1000)
+  // }
   return(
     <>
       <br/>
       <br/>
-      {! isLoggedOut ?  <p className='info'>Logout when the wallet opens, before signing in again</p> : <p> Sign in with the wallet for where you want your tokens to originate</p>}
-      <br/>
-      {! isLoggedOut ? <img src={settings} width={'200px'} /> : null}
+      {/* {! isLoggedOut ?  <p className='info'>Logout when the wallet opens, before signing in again</p> : <p> Sign in with the wallet for where you want your tokens to originate</p>} */}
+      {/* <br/> */}
+      {/* {! isLoggedOut ? <img src={settings} width={'200px'} /> : null} */}
       &nbsp;
       &nbsp;
       &nbsp;
-      {! isLoggedOut ? <img src={sign_out} width={'200px'} /> : null}
+      {/* {! isLoggedOut ? <img src={sign_out} width={'200px'} /> : null} */}
       <br/>
       <br/>
       <br/>
-      {isLoggedOut ?  <button className="connect-button" onClick={connect}>connect origin</button> : <button className="connect-button" onClick={logout}>logout</button>}
+      {<button className="connect-button" onClick={connect}>connect origin</button>}
     </>
   )
 }
 
 function DestinationLogin(props: any) {
 
-  sequence.initWallet('mumbai', {
+  sequence.initWallet('polygon', {
     // walletAppURL: "https://next.sequence.app/"
   })
 
@@ -259,7 +262,7 @@ function DestinationLogin(props: any) {
 
     const connectWallet = await wallet.connect({
       app: 'Sequence Migrations from Destination Wallet',
-      networkId: 80001,
+      networkId: 137,
       authorize: true,
       settings: {
         theme: 'dark'
@@ -273,14 +276,59 @@ function DestinationLogin(props: any) {
     }
   }
 
+  // const handleAddressChange = (value) => {
+
+  // }
+
+  const [debouncedValue, setDebouncedValue] = useState('');
+  const [inputValue, setInputValue] = useState('');
+
+  const handleAddressChange = (value: any) => {
+    setInputValue(value);
+    setDebouncedValue(value);
+  };
+
+  const myFunction = () => {
+      if(isValidEthereumAddress(debouncedValue)) {props.handleNext(); props.setDestinationAddress(debouncedValue)}
+    };
+  
+    // Debounce the myFunction
+    const debouncedMyFunction = debounce(myFunction, 2000);
+  
+    React.useEffect(() => {
+      if (debouncedValue) {
+        debouncedMyFunction();
+      }
+  
+      // Cleanup
+      return () => {
+        debouncedMyFunction.cancel();
+      };
+    }, [debouncedValue]);
+
+  function isValidEthereumAddress(address: any) {
+    try {
+        return ethers.utils.getAddress(address).toLowerCase() === address.toLowerCase();
+    } catch (e) {
+        return false;
+    }
+  }
+
   return(
     <>
       <br/>
       <br/>
-      <p className='info'>Sign in with the wallet for where you want your tokens to go</p>
+      <p className='info'>Input the wallet for where you want your tokens to go</p>
       <br/>
       <br/>
-      <button className="connect-button" onClick={connect}>connect destination</button>
+      <div className='container'>
+        <Box justifyContent={'center'}>
+        <Box style={{width: '400px'}} >
+          <TextInput placeholder={"input destination wallet"} onChange={(evt: any) => handleAddressChange(evt.target.value)}/>
+        </Box>
+        </Box>
+      </div>
+      {/* <button className="connect-button" onClick={connect}>connect destination</button> */}
     </>
   )
 }

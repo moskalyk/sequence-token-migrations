@@ -5,6 +5,7 @@
   "dependencies": {
     "0xsequence": "^0.43.30",
     "@0xsequence/design-system": "^1.0.4",
+    "@0xsequence/indexer": "^0.43.34",
     "@0xsequence/wagmi-connector": "^1.0.3",
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
@@ -17,8 +18,10 @@
     "@types/react": "^18.0.28",
     "@types/react-dom": "^18.0.11",
     "@wagmi/chains": "^0.2.9",
+    "lodash.debounce": "^4.0.8",
     "add": "^2.0.6",
     "ethereumjs-abi": "^0.6.8",
+    "ethers": "5.7.2",
     "framer-motion": "^10.12.16",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

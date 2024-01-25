@@ -21,35 +21,6 @@ import { InjectedConnector } from 'wagmi/connectors/injected'
 import { mainnet } from '@wagmi/chains'
 import { publicProvider } from 'wagmi/providers/public';
 
-const { chains, provider } = configureChains(
-  [mainnet],
-  [
-    publicProvider()
-  ]
-);
-
-  const connectors = [
-    // new SequenceConnector({
-    //   chains,
-    //   options: {
-    //     connect: {
-    //       app: 'boomland',
-    //       networkId: 137
-    //     }
-    //   }
-    // }),
-    new MetaMaskConnector({
-      chains,
-    }),
-  ]
-  
-  const wagmiClient = createClient({
-    autoConnect: true,
-    connectors,
-    provider
-  })
-
-
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
